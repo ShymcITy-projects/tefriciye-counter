@@ -205,7 +205,7 @@ els.tapBtn.addEventListener("click", () => {
 
 els.resetBtn.addEventListener("click", () => {
   if (state.count === 0) return;
-  const ok = window.confirm("Reset the counter to 0? This cannot be undone.");
+  const ok = window.confirm("Санақты 0-ге қайта бастау керек пе? Бұл әрекетті кері қайтару мүмкін емес.");
   if (!ok) return;
   state.count = 0;
   saveState();
@@ -219,8 +219,46 @@ renderAll();
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js").catch(err => {
-      console.warn("Service worker registration failed:", err);
+    navigator.serviceWorker.register("./sw.js")
+      .then(registration => {
+        // A version was already controlling this page before this
+        // registration call — so any "new" worker found from here on
+        // is an update, not the very first install.
+        const isUpdate = !!navigator.serviceWorker.controller;
+
+        registration.addEventListener("updatefound", () => {
+          const newWorker = registration.installing;
+          if (!newWorker) return;
+
+          newWorker.addEventListener("statechange", () => {
+            if (newWorker.state === "installed" && isUpdate) {
+              showUpdateBanner(newWorker);
+            }
+          });
+        });
+      })
+      .catch(err => {
+        console.warn("Service worker registration failed:", err);
+      });
+
+    // Reload once, right after the new worker takes control.
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
     });
   });
+}
+
+function showUpdateBanner(waitingWorker) {
+  const banner = document.getElementById("updateBanner");
+  const btn = document.getElementById("updateBtn");
+  if (!banner || !btn) return;
+
+  banner.hidden = false;
+  btn.addEventListener("click", () => {
+    waitingWorker.postMessage({ type: "SKIP_WAITING" });
+    banner.hidden = true;
+  }, { once: true });
 }
