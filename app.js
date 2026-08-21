@@ -96,7 +96,6 @@ const els = {
   fontPlus: document.getElementById("fontPlus"),
   countNum: document.getElementById("countNum"),
   tapBtn: document.getElementById("tapBtn"),
-  tapHint: document.getElementById("tapHint"),
   resetBtn: document.getElementById("resetBtn"),
   beadFill: document.getElementById("beadFill"),
   lapLabel: document.getElementById("lapLabel")
