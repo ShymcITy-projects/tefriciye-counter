@@ -27,30 +27,6 @@ const PRAYERS = {
       "уә алә алиһи уә сохбиһи фи кулли ләмхатин уә нәфасин " +
       "би адади кулли маълумин лака."
   },
-  ru: {
-    label: "Русский",
-    dir: "ltr",
-    text:
-      "Аллахумма салли салятан камилятан васаллим саляман тамман, " +
-      "‘аля сайидина Мухамадини-ллязи танхалю бихиль-‘укаду, " +
-      "ватанфариджу бихиль-курабу ватукза бихиль-хаваиджу, " +
-      "ватуналю бихи-рагаибу вахуснуль-хаватим, " +
-      "ваюстаскаль-гамаму биваджхихиль-кярими, " +
-      "ва‘аля алихи ва сахбихи фи кули лямхатин ванафасин " +
-      "би'адади кули ма‘люммин ляк."
-  },
-  la: {
-    label: "Latin",
-    dir: "ltr",
-    text:
-      "Allāhumma ṣalli ṣalātan kāmilatan, wa sallim salāman tāmman, " +
-      "ʿalā sayyidinā Muḥammadin illadhī tanḥallu bihi l-ʿuqadu, " +
-      "wa tanfariju bihi l-kurabu, wa tuqḍā bihi l-ḥawā'iju, " +
-      "wa tunālu bihi r-raghā'ibu wa ḥusnu l-khawātimi, " +
-      "wa yustasqa l-ghamāmu bi-wajhihi l-karīmi, " +
-      "wa ʿalā ālihi wa ṣaḥbihi, fī kulli lamḥatin wa nafasin " +
-      "bi-ʿadadi kulli maʿlūmin lak."
-  },
   ar: {
     label: "العربية",
     dir: "rtl",
@@ -65,7 +41,7 @@ const PRAYERS = {
   }
 };
 
-const SCRIPT_ORDER = ["kk", "ru", "la", "ar"];
+const SCRIPT_ORDER = ["kk", "ar"];
 const LAP_SIZE = 100;         // beads fill up once per 100 taps
 const FONT_MIN = 14;
 const FONT_MAX = 40;
