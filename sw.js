@@ -2,7 +2,7 @@
 // Caches the app shell on install so the app works fully offline
 // after the first successful load.
 
-const CACHE_NAME = "tefriciye-cache-v8";
+const CACHE_NAME = "tefriciye-cache-v9";
 const APP_SHELL = [
   "./",
   "./index.html",
