@@ -1,149 +1,314 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="kk">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Prayer Counter</title>
-  <link rel="manifest" href="./manifest.json">
-  <link rel="apple-touch-icon" href="./icon.png">
-  <style>
-    body { 
-      font-family: system-ui, -apple-system, sans-serif; 
-      margin: 0;
-      background: #f0f2f5; 
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      touch-action: manipulation;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0F1817">
+<title>Tefriciye — Prayer Counter</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
 
-    /* TOP HALF: Prayer Text Area */
-    #prayer-text {
-      position: relative;
-      flex: 1;
-      padding: 55px 20px 20px 20px; /* Extra top padding for font controls */
-      overflow-y: auto;
-      text-align: center;
-      background: white;
-      border-bottom: 2px solid #e5e5e5;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      /* Default font size base */
-      font-size: 18px;
-    }
+  :root{
+    --bg:#0F1817;
+    --bg-panel:#16211F;
+    --bg-panel-2:#1B2725;
+    --line: rgba(201,162,39,0.18);
+    --gold:#C9A227;
+    --gold-soft:#E4C766;
+    --text:#F1EEE3;
+    --text-muted:#8FA39C;
+    --bead-empty:#283634;
+    --btn-top:#20302D;
+    --btn-bottom:#152220;
+    --danger:#B0704F;
+    --focus:#E4C766;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
 
-    /* Font Controls (Top Right Corner) */
-    .font-controls {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      display: flex;
-      gap: 8px;
-      z-index: 10;
-    }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
 
-    .font-btn {
-      background: #e5e5ea;
-      border: none;
-      color: #1a1a1a;
-      font-weight: bold;
-      font-size: 0.9rem;
-      padding: 6px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
+  html,body{
+    height:100%;
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family: -apple-system, "Segoe UI", "Noto Sans", system-ui, sans-serif;
+    overscroll-behavior:none;
+  }
 
-    .font-btn:active {
-      background: #007aff;
-      color: white;
-    }
+  body{
+    display:flex;
+    flex-direction:column;
+    min-height:100dvh;
+    padding-top: max(14px, var(--safe-top));
+    padding-bottom: max(14px, var(--safe-bottom));
+  }
 
-    /* Relative Font Sizes (Scales proportionally) */
-    .arabic { 
-      font-size: 2.2em; 
-      margin-bottom: 0.4em; 
-      color: #1a1a1a;
-      line-height: 1.4;
-      font-family: "Amiri", "Scheherazade", "Arial", serif; 
-    }
-    .latin { 
-      font-size: 1.1em; 
-      font-style: italic; 
-      color: #555; 
-      margin-bottom: 0.4em; 
-    }
-    .kazakh { 
-      font-size: 1.1em; 
-      font-weight: bold; 
-      color: #007aff; 
-    }
+  /* ---------- Header ---------- */
+  header{
+    padding: 4px 18px 10px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
 
-    /* BOTTOM HALF: Counter Area */
-    #counter-section {
-      padding: 20px;
-      text-align: center;
-      background: #f0f2f5;
-      padding-bottom: 40px;
-    }
+  .brand{
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+  }
+  .brand .dot{
+    width:7px;height:7px;border-radius:50%;
+    background:var(--gold);
+    box-shadow:0 0 8px 1px rgba(201,162,39,0.6);
+  }
+  .brand h1{
+    font-size:15px;
+    font-weight:600;
+    letter-spacing:0.02em;
+    margin:0;
+    color:var(--text-muted);
+    text-transform:uppercase;
+  }
 
-    #count { 
-      font-size: 3.5rem; 
-      font-weight: bold; 
-      margin: 10px 0 20px 0; 
-      color: #1a1a1a; 
-    }
+  .script-select{
+    display:flex;
+    gap:4px;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:3px;
+  }
+  .script-select button{
+    appearance:none;
+    border:none;
+    background:transparent;
+    color:var(--text-muted);
+    font-size:12.5px;
+    font-weight:600;
+    padding:6px 10px;
+    border-radius:999px;
+    cursor:pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .script-select button.active{
+    background:var(--gold);
+    color:#1A1405;
+  }
+  .script-select button:focus-visible{
+    outline:2px solid var(--focus);
+    outline-offset:2px;
+  }
 
-    #tapBtn { 
-      width: 100%; 
-      max-width: 400px; 
-      height: 120px; 
-      font-size: 2.5rem; 
-      font-weight: bold;
-      background: #007aff; 
-      color: white; 
-      border: none; 
-      border-radius: 25px; 
-      box-shadow: 0 8px 15px rgba(0, 122, 255, 0.2);
-    }
-    
-    #tapBtn:active { 
-      background: #005bb5; 
-      transform: scale(0.97); 
-    }
+  /* ---------- Prayer text panel ---------- */
+  main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    min-height:0;
+    padding: 6px 18px 10px;
+    gap:14px;
+  }
 
-    #resetBtn { 
-      background: transparent; 
-      color: #ff3b30; 
-      font-size: 1.1rem; 
-      margin-top: 20px; 
-      border: none; 
-      padding: 10px 20px;
-    }
-  </style>
+  .text-panel{
+    position:relative;
+    background:linear-gradient(180deg, var(--bg-panel-2), var(--bg-panel));
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:22px 20px;
+    overflow-y:auto;
+    flex:1 1 auto;
+    min-height:120px;
+    max-height:38vh;
+  }
+  .text-panel::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:20px;
+    pointer-events:none;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+  .prayer-text{
+    margin:0;
+    font-family: "Georgia", "Iowan Old Style", "Noto Serif", serif;
+    line-height:1.75;
+    color:var(--text);
+    font-size: var(--font-size, 21px);
+    letter-spacing:0.01em;
+  }
+  .prayer-text[dir="rtl"]{
+    font-family: "Noto Naskh Arabic", "Scheherazade New", "Traditional Arabic", "Al Bayan", serif;
+    line-height:2.1;
+    text-align:right;
+  }
+
+  /* ---------- Font size control ---------- */
+  .font-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+  }
+  .font-row button{
+    width:36px;height:36px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background:var(--bg-panel);
+    color:var(--gold-soft);
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .font-row button:active{ background:var(--bg-panel-2); }
+  .font-row button:focus-visible{ outline:2px solid var(--focus); outline-offset:2px; }
+  .font-row .label{
+    font-size:11.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--text-muted);
+    min-width:64px;
+    text-align:center;
+  }
+
+  /* ---------- Counter zone ---------- */
+  .counter-zone{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    padding: 6px 0 2px;
+  }
+
+  .lap-label{
+    font-size:12px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--text-muted);
+    height:16px;
+  }
+
+  .tap-wrap{
+    position:relative;
+    width:min(64vw, 260px);
+    aspect-ratio:1/1;
+  }
+
+  .tap-wrap svg{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    transform:rotate(-90deg);
+  }
+  .bead-track{ fill:none; stroke:var(--bead-empty); stroke-width:5; }
+  .bead-fill{
+    fill:none;
+    stroke:var(--gold);
+    stroke-width:5;
+    stroke-linecap:round;
+    filter: drop-shadow(0 0 5px rgba(201,162,39,0.55));
+    transition: stroke-dashoffset 0.25s ease;
+  }
+
+  #tapBtn{
+    position:absolute;
+    inset:14px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background: radial-gradient(circle at 50% 32%, var(--btn-top), var(--btn-bottom));
+    color:var(--text);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:4px;
+    cursor:pointer;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
+    user-select:none;
+    -webkit-user-select:none;
+  }
+  #tapBtn:active{ transform:scale(0.97); }
+  #tapBtn:focus-visible{ outline:2px solid var(--focus); outline-offset:4px; }
+
+  .count-num{
+    font-size:44px;
+    font-weight:700;
+    font-variant-numeric: tabular-nums;
+    color:var(--gold-soft);
+    line-height:1;
+  }
+  .tap-hint{
+    font-size:11.5px;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--text-muted);
+  }
+
+  .reset-link{
+    margin-top:4px;
+    background:none;
+    border:none;
+    color:var(--danger);
+    font-size:13px;
+    letter-spacing:0.02em;
+    cursor:pointer;
+    padding:8px 12px;
+  }
+  .reset-link:focus-visible{ outline:2px solid var(--focus); outline-offset:2px; border-radius:6px; }
+
+  @media (prefers-reduced-motion: reduce){
+    .bead-fill{ transition:none; }
+    #tapBtn:active{ transform:none; }
+  }
+</style>
 </head>
 <body>
 
-  <!-- Upper Screen: Prayer Text -->
-  <div id="prayer-text">
-    <div class="font-controls">
-      <button class="font-btn" id="fontSmaller">A-</button>
-      <button class="font-btn" id="fontLarger">A+</button>
-    </div>
-    <div class="arabic">سُبْحَانَ ٱللَّٰهِ</div>
-    <div class="latin">Subḥān Allāh</div>
-    <div class="kazakh">Алла пәк</div>
-  </div>
-  
-  <!-- Lower Screen: Counter -->
-  <div id="counter-section">
-    <div id="count">0</div>
-    <button id="tapBtn">TAP</button>
-    <div>
-      <button id="resetBtn">Reset Count</button>
-    </div>
-  </div>
+  <header>
+    <div class="brand"><span class="dot"></span><h1>Tefriciye</h1></div>
+    <nav class="script-select" id="scriptSelect" aria-label="Script">
+      <button data-script="kk" aria-pressed="false">ҚАЗ</button>
+      <button data-script="ru" aria-pressed="false">РУС</button>
+      <button data-script="la" aria-pressed="false">LAT</button>
+      <button data-script="ar" aria-pressed="false">عربي</button>
+    </nav>
+  </header>
 
-  <script src="./app.js"></script>
+  <main>
+    <section class="text-panel" aria-label="Prayer text">
+      <p class="prayer-text" id="prayerText"></p>
+    </section>
+
+    <div class="font-row">
+      <button id="fontMinus" aria-label="Decrease font size">A−</button>
+      <span class="label" id="fontLabel">21 px</span>
+      <button id="fontPlus" aria-label="Increase font size">A+</button>
+    </div>
+
+    <div class="counter-zone">
+      <div class="lap-label" id="lapLabel"></div>
+      <div class="tap-wrap">
+        <svg viewBox="0 0 100 100">
+          <circle class="bead-track" cx="50" cy="50" r="46"></circle>
+          <circle class="bead-fill" id="beadFill" cx="50" cy="50" r="46"></circle>
+        </svg>
+        <button id="tapBtn" aria-label="Tap to count">
+          <span class="count-num" id="countNum">0</span>
+          <span class="tap-hint" id="tapHint">TAP</span>
+        </button>
+      </div>
+      <button class="reset-link" id="resetBtn">Reset count</button>
+    </div>
+  </main>
+
+<script src="./app.js"></script>
 </body>
 </html>
