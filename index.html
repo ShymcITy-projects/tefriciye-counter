@@ -29,7 +29,7 @@
     --safe-bottom: env(safe-area-inset-bottom, 0px);
   }
 
-  *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 
   html,body{
     height:100%;
@@ -123,8 +123,8 @@
     padding:22px 20px;
     overflow-y:auto;
     flex:1 1 auto;
-    min-height:120px;
-    max-height:38vh;
+    min-height:160px;
+    max-height:48vh;
   }
   .text-panel::before{
     content:"";
@@ -264,6 +264,37 @@
   }
   .reset-link:focus-visible{ outline:2px solid var(--focus); outline-offset:2px; border-radius:6px; }
 
+  /* ---------- Update banner ---------- */
+  [hidden]{ display:none !important; }
+  .update-banner{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin: 0 18px 8px;
+    padding:10px 14px;
+    border-radius:14px;
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+  }
+  .update-banner span{
+    font-size:13px;
+    color:var(--text);
+  }
+  .update-banner button{
+    flex-shrink:0;
+    appearance:none;
+    border:none;
+    background:var(--gold);
+    color:#1A1405;
+    font-size:12.5px;
+    font-weight:700;
+    padding:8px 14px;
+    border-radius:999px;
+    cursor:pointer;
+  }
+  .update-banner button:focus-visible{ outline:2px solid var(--focus); outline-offset:2px; }
+
   @media (prefers-reduced-motion: reduce){
     .bead-fill{ transition:none; }
     #tapBtn:active{ transform:none; }
@@ -271,6 +302,11 @@
 </style>
 </head>
 <body>
+
+  <div class="update-banner" id="updateBanner" hidden>
+    <span>A new version is ready.</span>
+    <button id="updateBtn" type="button">Update</button>
+  </div>
 
   <header>
     <div class="brand"><span class="dot"></span><h1>Tefriciye</h1></div>
@@ -305,7 +341,7 @@
           <span class="tap-hint" id="tapHint">TAP</span>
         </button>
       </div>
-      <button class="reset-link" id="resetBtn">Reset count</button>
+      <button class="reset-link" id="resetBtn">Қайта бастау</button>
     </div>
   </main>
 
