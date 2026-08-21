@@ -1,26 +1,59 @@
-const CACHE_NAME = 'prayer-cache-v1';
-const urlsToCache = [
-  './',
-  './index.html',
-  './app.js',
-  './manifest.json',
-  './icon.png'
+// Tefriciye Prayer Counter — service worker
+// Caches the app shell on install so the app works fully offline
+// after the first successful load.
+
+const CACHE_NAME = "tefriciye-cache-v1";
+const APP_SHELL = [
+  "./",
+  "./index.html",
+  "./app.js",
+  "./manifest.json",
+  "./icon.png"
 ];
 
-// Install the files into the phone's cache
-self.addEventListener('install', event => {
+self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(urlsToCache);
-    })
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(APP_SHELL))
+      .then(() => self.skipWaiting())
   );
 });
 
-// Serve the cached files when there is no internet
-self.addEventListener('fetch', event => {
+self.addEventListener("activate", event => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(
+        keys
+          .filter(key => key !== CACHE_NAME)
+          .map(key => caches.delete(key))
+      )
+    ).then(() => self.clients.claim())
+  );
+});
+
+// Cache-first, falling back to network, falling back to the
+// cached app shell for navigations (so it still opens offline
+// even if a specific request was never cached).
+self.addEventListener("fetch", event => {
+  if (event.request.method !== "GET") return;
+
   event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request);
+    caches.match(event.request).then(cached => {
+      if (cached) return cached;
+
+      return fetch(event.request)
+        .then(response => {
+          if (response && response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+          }
+          return response;
+        })
+        .catch(() => {
+          if (event.request.mode === "navigate") {
+            return caches.match("./index.html");
+          }
+        });
     })
   );
 });
