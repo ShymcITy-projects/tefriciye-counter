@@ -2,7 +2,7 @@
 // Caches the app shell on install so the app works fully offline
 // after the first successful load.
 
-const CACHE_NAME = "tefriciye-cache-v1";
+const CACHE_NAME = "tefriciye-cache-v3";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -12,11 +12,20 @@ const APP_SHELL = [
 ];
 
 self.addEventListener("install", event => {
+  // Note: no self.skipWaiting() here on purpose — a new service worker
+  // stays "waiting" until the page asks it to take over (see the
+  // SKIP_WAITING message below). That pause is what makes the
+  // "new version available" prompt in app.js possible.
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(APP_SHELL))
-      .then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL))
   );
+});
+
+// The page sends this once the person taps "Update" in the prompt.
+self.addEventListener("message", event => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener("activate", event => {
